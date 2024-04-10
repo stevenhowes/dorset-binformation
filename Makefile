@@ -23,7 +23,7 @@ run: build
 	./dorset-binformation
 .PHONY:run
 
-install: build
+install:
 	mkdir -p /opt/dorset-binformation/
 	useradd dorset-binformation || true
 	chown dorset-binformation:dorset-binformation /opt/dorset-binformation/
