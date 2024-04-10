@@ -1,0 +1,17 @@
+[Unit]
+Description=Dorset Binformation Server
+ConditionPathExists=/opt/dorset-binformation/dorset-binformation
+After=network.target
+[Service]
+Type=simple
+User=dorset-binformation
+Group=dorset-binformation
+WorkingDirectory=/opt/dorset-binformation/
+ExecStart=/opt/dorset-binformation/dorset-binformation --port localhost:9090
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=dorset-binformation
+[Install]
+WantedBy=multi-user.target
