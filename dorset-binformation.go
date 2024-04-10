@@ -5,7 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -22,7 +22,7 @@ func getHTML(url string) (*html.Node, error) {
 	}
 	defer resp.Body.Close()
 
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -96,6 +96,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request, logger *log.Logger) {
 
 	// If we got an error from the council (in text) pass it on
 	err = findDates(doc, dates)
+
 	if err != nil {
 		logger.Println("Error retrieving data: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -105,11 +106,16 @@ func handleRequest(w http.ResponseWriter, r *http.Request, logger *log.Logger) {
 	jsonData, err := json.Marshal(dates)
 	if err != nil {
 		logger.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	// return jsonData to the client
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonData)
+	_, err = w.Write(jsonData)
+	if err != nil {
+		logger.Println("Error writing response: ", err)
+	}
 }
 
 func main() {
